@@ -1,5 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
-import { MetaClient } from "@/integration/meta";
+import {
+  FetchMetaAccessToken,
+  FetchMetaRefreshToken,
+  VerifyMetaState,
+} from "@/integration/meta";
 
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
@@ -10,39 +14,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "State is required" }, { status: 400 });
   }
 
-  console.log("Getting state and code", state, code);
-
-  const metaClient = new MetaClient();
-  const { success } = await metaClient.verifyMetaState(state, state);
-
-  if (!success) {
+  const verifiedState = await VerifyMetaState(state);
+  if (!verifiedState) {
     return NextResponse.json({ error: "Invalid state" }, { status: 400 });
   }
 
-  console.log("Verified state", success);
+  const accessTokenData = await FetchMetaAccessToken(code);
+  console.log("Getting access token", accessTokenData);
 
-  const { success: accessTokenSuccess, data: accessTokenData } =
-    await metaClient.getAccessToken(code);
-  console.log("Getting access token", accessTokenSuccess, accessTokenData);
-
-  if (!accessTokenSuccess) {
-    return NextResponse.json(
-      { error: "Failed to get access token" },
-      { status: 400 }
-    );
-  }
-
-  const {
-    success: longLivedAccessTokenSuccess,
-    data: longLivedAccessTokenData,
-  } = await metaClient.getLongLivedAccessToken(accessTokenData.access_token);
-
-  if (!longLivedAccessTokenSuccess) {
-    return NextResponse.json(
-      { error: "Failed to get long lived access token" },
-      { status: 400 }
-    );
-  }
+  const longLivedAccessTokenData = await FetchMetaRefreshToken(
+    accessTokenData.access_token
+  );
 
   return NextResponse.json({ success: true, data: longLivedAccessTokenData });
 }
