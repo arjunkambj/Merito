@@ -1,135 +1,114 @@
-# Turborepo starter
+# OKTOO Lead Management CRM
 
-This Turborepo starter is maintained by the Turborepo core team.
+OKTOO centralizes the leads generated from Meta (Facebook & Instagram) and Google Ads into a single, collaborative workspace. The project focuses on automating lead ingestion, enrichment, routing, and follow-up so sales teams can react in real time instead of stitching together multiple dashboards.
 
-## Using this example
+OKTOO lives in a Turborepo monorepo and is split between a Next.js front end, a Convex backend, and a shared design system. This repository provides the foundation for the integrations, data models, and UI flows that power the CRM.
 
-Run the following command:
+## Highlights
 
-```sh
-npx create-turbo@latest
+- **Unified Meta & Google lead pipeline** – capture ad form submissions from both ecosystems and view them in one workspace.
+- **Real-time data layer** – Convex handles storage, live queries, and server-side workflows such as webhook processing and lead scoring.
+- **Modern operator experience** – React 19, Next.js App Router, and the HeroUI component kit provide responsive dashboards, auth flows, and marketing pages.
+- **Shared tooling** – reusable UI components, linting, TypeScript configs, and Turbo-powered workflows keep the web and backend apps in sync.
+
+## Repository Structure
+
+| Path | Description |
+| --- | --- |
+| `apps/web` | Next.js 16 application for dashboards, auth, and marketing pages. |
+| `apps/backend` | Convex project that stores data, processes provider webhooks, and orchestrates automations. |
+| `packages/ui` | Shared React primitives used by the web app. |
+| `packages/eslint-config`, `packages/typescript-config` | Centralized linting and TypeScript settings for every package. |
+
+## Tech Stack
+
+- **Frontend:** Next.js 16, React 19, HeroUI, Tailwind CSS 4, Framer Motion.
+- **Backend:** Convex (TypeScript server functions and schema), Svix for webhook verification.
+- **Tooling:** Bun 1.3, Turbo, TypeScript 5.9, ESLint 9, Prettier 3.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18 or later (for tooling compatibility).
+- [Bun](https://bun.com/) ≥ 1.3.0 (the repository is configured to use Bun as the package manager).
+- A Convex account and the Convex CLI (`bunx convex dev`) for local development.
+
+### Install Dependencies
+
+```bash
+bun install
 ```
 
-## What's inside?
+The command above installs dependencies for every workspace (web, backend, and shared packages).
 
-This Turborepo includes the following packages/apps:
+### Configure Environment Variables
 
-### Apps and Packages
+1. Create `apps/web/.env.local` (if it does not already exist) and add:
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+   ```bash
+   NEXT_PUBLIC_CONVEX_URL="https://<your-convex-deployment>.convex.cloud"
+   ```
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+   This value is required by `ConvexClientProvider` in the Next.js app.
 
-### Utilities
+2. Store provider credentials and API tokens (Meta Lead Ads, Google Ads, webhook secrets, etc.) in your Convex project. Use the Convex CLI to manage secrets securely:
 
-This Turborepo has some additional tools already setup for you:
+   ```bash
+   bunx convex env set META_ACCESS_TOKEN "<token>"
+   bunx convex env set GOOGLE_ADS_DEVELOPER_TOKEN "<token>"
+   bunx convex env set WEBHOOK_SIGNING_SECRET "<secret>"
+   ```
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+   Adjust the key names to match the integrations you enable.
 
-### Build
+### Run the Apps Locally
 
-To build all apps and packages, run the following command:
+- Start every workspace (frontend + backend) with Turbo:
 
-```
-cd my-turborepo
+  ```bash
+  bun run dev
+  ```
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+  This runs `turbo run dev`, launching the Next.js development server on port `3000` and the Convex dev server with hot reloading.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
+- Or run services individually:
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+  ```bash
+  # Frontend
+  cd apps/web
+  bun run dev
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+  # Convex backend
+  cd apps/backend
+  bun run dev
+  ```
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+Visit `http://localhost:3000` to access the OKTOO dashboard shell.
 
-### Develop
+### Quality Checks
 
-To develop all apps and packages, run the following command:
+```bash
+# Type checking across workspaces
+bun run check-types
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+# Lint with the shared ESLint configuration
+bun run lint
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## Meta & Google Lead Flow (Overview)
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+1. **Capture:** Meta Lead Ads and Google Lead Forms trigger webhooks that hit Convex actions in `apps/backend`.
+2. **Normalize:** Convex server functions enrich the payloads, merge duplicates, and update lead status.
+3. **Distribute:** Live queries push updates to the Next.js dashboard so operators see new leads instantly.
+4. **Automate:** Follow-up sequences, assignments, and notifications can be orchestrated from the Convex backend.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+Implementation for these steps is evolving—refer to the Convex actions and schema when extending the pipeline.
 
-### Remote Caching
+## Next Steps
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+- Flesh out lead schemas and ingestion actions in `apps/backend/convex`.
+- Expand dashboard modules under `apps/web/src/app/(protected)` to visualize Meta/Google pipelines.
+- Integrate authentication and role-based access for sales teams.
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+When you add features, update this README so the setup instructions stay accurate.
