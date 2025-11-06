@@ -4,6 +4,7 @@ import { v } from "convex/values";
 const schema = defineSchema({
   metaIntegrations: defineTable({
     accessToken: v.string(),
+
     refreshToken: v.optional(v.string()),
     tokenExpiresAt: v.optional(v.number()),
 
