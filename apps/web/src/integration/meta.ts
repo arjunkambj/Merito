@@ -52,22 +52,6 @@ export const FetchMetaRefreshToken = async (shortLivedToken: string) => {
 
 ///////////////////// Need to Review these functions /////////////////////
 
-// Fetch user's business accounts
-export const FetchMetaBusinessAccounts = async (accessToken: string) => {
-  const response = await fetch(
-    `${META_GRAPH_URL}/me/businesses?fields=id,name,verification_status&access_token=${accessToken}`
-  );
-
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch business accounts: ${response.statusText}`
-    );
-  }
-
-  const data = await response.json();
-  return data;
-};
-
 // Fetch pages associated with a business or user
 export const FetchMetaPages = async (accessToken: string) => {
   const response = await fetch(
