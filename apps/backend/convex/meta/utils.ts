@@ -1,37 +1,13 @@
 export const META_API_VERSION = "v24.0";
 export const META_GRAPH_URL = `https://graph.facebook.com/${META_API_VERSION}`;
-
-type FetchResponse = {
-  ok: boolean;
-  status: number;
-  statusText: string;
-  json(): Promise<unknown>;
-  text(): Promise<string>;
-};
-
-export type MetaPage = {
-  id: string;
-  name: string;
-  access_token: string;
-  category?: string;
-};
-
-export type MetaForm = {
-  id: string;
-  name: string;
-  locale?: string;
-};
-
-export type MetaLeadField = {
-  name: string;
-  values?: Array<string | number>;
-};
-
-export type MetaLead = {
-  id: string;
-  created_time: string;
-  field_data: MetaLeadField[];
-};
+import type {
+  FetchResponse,
+  MetaPage,
+  MetaForm,
+  MetaLead,
+  MetaLeadField,
+  NormalizedLead,
+} from "./types";
 
 const handleMetaResponse = async <T>(response: FetchResponse) => {
   if (!response.ok) {
@@ -94,17 +70,6 @@ export const fetchLeadDetails = async (leadId: string, accessToken: string) => {
     `${META_GRAPH_URL}/${leadId}?access_token=${accessToken}&fields=created_time,field_data,ad_id,form_id`
   )) as FetchResponse;
   return handleMetaResponse<MetaLead>(response);
-};
-
-export type NormalizedLead = {
-  fullName?: string;
-  email?: string;
-  phone?: string;
-  country?: string;
-  state?: string;
-  city?: string;
-  postalCode?: string;
-  customFields?: Record<string, unknown>;
 };
 
 export const normalizeLeadFields = (fieldData: MetaLeadField[]) => {

@@ -1,6 +1,6 @@
 import { Workpool } from "@convex-dev/workpool";
 import { v } from "convex/values";
-import { action } from "../_generated/server";
+import { action, internalAction } from "../_generated/server";
 import { api, components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
 import {
@@ -8,9 +8,14 @@ import {
   fetchMetaForms,
   subscribePageToLeadgen,
 } from "./utils";
+import type { FormWithContext } from "./types";
+import { fetchFormLeads, normalizeLeadFields } from "./utils";
 
 const ACCESS_TOKEN_LIFETIME_MS = 59 * 24 * 60 * 60 * 1000;
 const LEADS_LOOKBACK_MS = 60 * 24 * 60 * 60 * 1000;
+
+type SavedPageReference = { pageId: string; metaPageId: Id<"metaPages"> };
+type SavedFormReference = { formId: string; metaFormId: Id<"metaForms"> };
 
 const webhookUrl = process.env.META_WEBHOOK_URL;
 const webhookVerifyToken = process.env.META_WEBHOOK_VERIFY_TOKEN;
@@ -19,18 +24,6 @@ const metaLeadWorkpool = new Workpool(components.metaWorkpool, {
   maxParallelism: 3,
   retryActionsByDefault: true,
 });
-
-type FormWithContext = {
-  formId: string;
-  formName: string;
-  formLocale?: string;
-  metaPageId: Id<"metaPages">;
-  pageId: string;
-  pageAccessToken: string;
-};
-
-type SavedPageReference = { pageId: string; metaPageId: Id<"metaPages"> };
-type SavedFormReference = { formId: string; metaFormId: Id<"metaForms"> };
 
 export const syncMetaIntegration = action({
   args: {
@@ -160,5 +153,57 @@ export const syncMetaIntegration = action({
       forms: savedForms.length,
       leadsScheduled: scheduled,
     };
+  },
+});
+
+export const pullLeadHistory = internalAction({
+  args: {
+    teamId: v.string(),
+    formId: v.string(),
+    metaFormId: v.id("metaForms"),
+    pageId: v.string(),
+    pageAccessToken: v.string(),
+    since: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const leads = await fetchFormLeads(
+      args.formId,
+      args.pageAccessToken,
+      args.since
+    );
+
+    if (!leads.length) {
+      return { processed: 0 } as const;
+    }
+
+    const normalized = leads.map((lead) => {
+      const parsed = normalizeLeadFields(lead.field_data ?? []);
+      const capturedAt = Date.parse(lead.created_time ?? "");
+      const customFields = parsed.customFields;
+
+      return {
+        teamId: args.teamId,
+        metaFormId: args.metaFormId,
+        metaLeadId: lead.id,
+        fullName: parsed.fullName,
+        email: parsed.email,
+        phone: parsed.phone,
+        country: parsed.country,
+        state: parsed.state,
+        city: parsed.city,
+        postalCode: parsed.postalCode,
+        customFields:
+          customFields && Object.keys(customFields).length
+            ? customFields
+            : undefined,
+        capturedAt: Number.isFinite(capturedAt) ? capturedAt : Date.now(),
+      };
+    });
+
+    await ctx.runMutation(internal.meta.mutation.saveLeads, {
+      leads: normalized,
+    });
+
+    return { processed: normalized.length };
   },
 });
