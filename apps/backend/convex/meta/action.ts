@@ -64,6 +64,14 @@ export const handleMetaCallback = action({
         }
       }
     }
+
+    await ctx.runMutation(
+      internal.core.integration.updatesecuessfullyIntegrated,
+      {
+        teamId,
+        integrationType: "meta",
+      }
+    );
   },
 });
 

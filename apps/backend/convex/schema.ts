@@ -15,7 +15,7 @@ const schema = defineSchema({
     refreshToken: v.optional(v.string()),
     refreshTokenExpiresAt: v.optional(v.number()),
     isWebhookSubscribed: v.optional(v.boolean()),
-
+    isSuccessfullyIntegrated: v.boolean(),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -39,7 +39,7 @@ const schema = defineSchema({
     metaPageId: v.string(),
     formId: v.string(),
     formName: v.string(),
-    isPrimary: v.optional(v.boolean()),
+    isPrimary: v.boolean(),
 
     createdAt: v.number(),
     updatedAt: v.number(),

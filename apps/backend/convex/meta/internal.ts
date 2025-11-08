@@ -79,6 +79,7 @@ export const saveMetaForm = internalMutation({
       metaPageId,
       formId: form.id,
       formName: form.name,
+      isPrimary: false,
       createdAt: Date.now(),
       updatedAt: Date.now(),
     });

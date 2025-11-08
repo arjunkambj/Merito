@@ -36,7 +36,7 @@ export const saveIntegration = internalMutation({
         refreshToken,
         integratedByUserId,
         refreshTokenExpiresAt,
-        isWebhookSubscribed: true,
+        isWebhookSubscribed: false,
         updatedAt: Date.now(),
       });
     } else {
@@ -46,10 +46,36 @@ export const saveIntegration = internalMutation({
         integratedByUserId,
         accessToken,
         accessTokenExpiresAt,
-        isWebhookSubscribed: true,
+        isWebhookSubscribed: false,
         refreshToken,
+        isSuccessfullyIntegrated: false,
         refreshTokenExpiresAt,
         createdAt: Date.now(),
+        updatedAt: Date.now(),
+      });
+    }
+    return true;
+  },
+});
+
+export const updatesecuessfullyIntegrated = internalMutation({
+  args: {
+    teamId: v.string(),
+    integrationType: v.union(v.literal("meta"), v.literal("google")),
+  },
+  handler: async (ctx, args) => {
+    const { teamId, integrationType } = args;
+
+    const integration = await ctx.db
+      .query("Integrations")
+      .withIndex("byIntegrationTypeAndTeamId", (q) =>
+        q.eq("integrationType", integrationType).eq("teamId", teamId)
+      )
+      .first();
+
+    if (integration) {
+      await ctx.db.patch(integration._id, {
+        isSuccessfullyIntegrated: true,
         updatedAt: Date.now(),
       });
     }
