@@ -13,15 +13,16 @@ export const pullLeadHistory = internalAction({
     since: v.number(),
   },
   handler: async (ctx, args) => {
-    console.log(`[pullLeadHistory] Step 1: Starting lead history pull for form ${args.formId}`);
-    const leads = await fetchFormLeads(args.formId, args.pageAccessToken, args.since);
+    const leads = await fetchFormLeads(
+      args.formId,
+      args.pageAccessToken,
+      args.since
+    );
 
     if (!leads.length) {
-      console.log(`[pullLeadHistory] No leads found for form ${args.formId}`);
       return { processed: 0 } as const;
     }
 
-    console.log(`[pullLeadHistory] Step 2: Normalizing ${leads.length} leads for form ${args.formId}`);
     const normalized = leads.map((lead) => {
       const parsed = normalizeLeadFields(lead.field_data ?? []);
       const capturedAt = Date.parse(lead.created_time ?? "");
@@ -39,17 +40,17 @@ export const pullLeadHistory = internalAction({
         city: parsed.city,
         postalCode: parsed.postalCode,
         customFields:
-          customFields && Object.keys(customFields).length ? customFields : undefined,
+          customFields && Object.keys(customFields).length
+            ? customFields
+            : undefined,
         capturedAt: Number.isFinite(capturedAt) ? capturedAt : Date.now(),
       };
     });
 
-    console.log(`[pullLeadHistory] Step 3: Saving ${normalized.length} leads to database for form ${args.formId}`);
     await ctx.runMutation(internal.meta.mutation.saveLeads, {
       leads: normalized,
     });
 
-    console.log(`[pullLeadHistory] Step 4: Completed processing ${normalized.length} leads for form ${args.formId}`);
     return { processed: normalized.length };
   },
 });

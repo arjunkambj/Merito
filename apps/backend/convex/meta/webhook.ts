@@ -28,7 +28,9 @@ const extractLeadChanges = (payload: any): LeadChange[] => {
     }
   }
 
-  return results.filter((change) => change.pageId && change.formId && change.leadId);
+  return results.filter(
+    (change) => change.pageId && change.formId && change.leadId
+  );
 };
 
 export const metaWebhookGet = httpAction(async (_ctx, request) => {
@@ -84,7 +86,10 @@ export const metaWebhookPost = httpAction(async (ctx, request) => {
     let leadDetails = null;
     if (change.leadId) {
       try {
-        leadDetails = await fetchLeadDetails(change.leadId, pageDoc.pageAccessToken);
+        leadDetails = await fetchLeadDetails(
+          change.leadId,
+          pageDoc.pageAccessToken
+        );
       } catch (error) {
         console.error("Failed to fetch lead from webhook", error);
       }
@@ -111,8 +116,7 @@ export const metaWebhookPost = httpAction(async (ctx, request) => {
           city: parsed.city,
           postalCode: parsed.postalCode,
           customFields:
-            parsed.customFields &&
-            Object.keys(parsed.customFields).length > 0
+            parsed.customFields && Object.keys(parsed.customFields).length > 0
               ? parsed.customFields
               : undefined,
           capturedAt: Number.isFinite(capturedAt) ? capturedAt : Date.now(),

@@ -3,7 +3,11 @@ import { v } from "convex/values";
 import { action } from "../_generated/server";
 import { api, components, internal } from "../_generated/api";
 import type { Id } from "../_generated/dataModel";
-import { fetchMetaPages, fetchMetaForms, subscribePageToLeadgen } from "./utils";
+import {
+  fetchMetaPages,
+  fetchMetaForms,
+  subscribePageToLeadgen,
+} from "./utils";
 
 const ACCESS_TOKEN_LIFETIME_MS = 59 * 24 * 60 * 60 * 1000;
 const LEADS_LOOKBACK_MS = 60 * 24 * 60 * 60 * 1000;
@@ -36,10 +40,8 @@ export const syncMetaIntegration = action({
     refreshToken: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    console.log("[syncMetaIntegration] Step 1: Starting Meta integration sync for team", args.teamId);
     const expiresAt = Date.now() + ACCESS_TOKEN_LIFETIME_MS;
 
-    console.log("[syncMetaIntegration] Step 2: Saving integration to database");
     await ctx.runMutation(api.core.integration.handleIntegration, {
       teamId: args.teamId,
       integrationType: "meta",
@@ -49,15 +51,10 @@ export const syncMetaIntegration = action({
       refreshTokenExpiresAt: args.refreshToken ? expiresAt : undefined,
     });
 
-    console.log("[syncMetaIntegration] Step 3: Fetching Meta pages");
     const pages = await fetchMetaPages(args.accessToken);
     if (!pages.length) {
-      console.log("[syncMetaIntegration] No pages found, returning early");
       return { pages: 0, forms: 0, leadsScheduled: 0 };
     }
-    console.log(`[syncMetaIntegration] Found ${pages.length} pages`);
-
-    console.log("[syncMetaIntegration] Step 4: Normalizing page data");
     const normalizedPages = pages
       .filter((page) => !!page.access_token)
       .map((page) => ({
@@ -68,7 +65,6 @@ export const syncMetaIntegration = action({
         connectedAppId: page.category,
       }));
 
-    console.log("[syncMetaIntegration] Step 5: Saving pages to database");
     const savedPages = (await ctx.runMutation(
       internal.meta.mutation.replaceMetaPages,
       {
@@ -83,15 +79,12 @@ export const syncMetaIntegration = action({
 
     const formsWithContext: FormWithContext[] = [];
 
-    console.log("[syncMetaIntegration] Step 6: Fetching forms and subscribing to webhooks");
     for (const page of normalizedPages) {
       const metaPageId = pageIdToMetaId.get(page.pageId);
       if (!metaPageId) continue;
 
-      console.log(`[syncMetaIntegration] Step 6a: Fetching forms for page ${page.pageName} (${page.pageId})`);
       const forms = await fetchMetaForms(page.pageId, page.pageAccessToken);
-      console.log(`[syncMetaIntegration] Found ${forms.length} forms for page ${page.pageName}`);
-      
+
       for (const form of forms) {
         formsWithContext.push({
           formId: form.id,
@@ -105,7 +98,6 @@ export const syncMetaIntegration = action({
 
       if (!webhookUrl) continue;
 
-      console.log(`[syncMetaIntegration] Step 6b: Subscribing page ${page.pageName} to leadgen webhook`);
       const subscribed = await subscribePageToLeadgen(
         page.pageId,
         page.pageAccessToken,
@@ -114,7 +106,6 @@ export const syncMetaIntegration = action({
       );
 
       if (subscribed) {
-        console.log(`[syncMetaIntegration] Successfully subscribed page ${page.pageName} to webhook`);
         await ctx.runMutation(internal.meta.mutation.setPageWebhookStatus, {
           metaPageId,
           isWebhookSubscribed: true,
@@ -122,7 +113,6 @@ export const syncMetaIntegration = action({
       }
     }
 
-    console.log("[syncMetaIntegration] Step 7: Saving forms to database");
     const savedForms = (await ctx.runMutation(
       internal.meta.mutation.replaceMetaForms,
       {
@@ -145,12 +135,10 @@ export const syncMetaIntegration = action({
     const sinceSeconds = Math.floor((Date.now() - LEADS_LOOKBACK_MS) / 1000);
     let scheduled = 0;
 
-    console.log("[syncMetaIntegration] Step 8: Scheduling lead history pulls");
     for (const form of formsWithContext) {
       const metaFormId = formIdToMetaId.get(form.formId);
       if (!metaFormId) continue;
 
-      console.log(`[syncMetaIntegration] Scheduling lead history pull for form ${form.formName} (${form.formId})`);
       await metaLeadWorkpool.enqueueAction(
         ctx,
         internal.meta.leads.pullLeadHistory,
@@ -167,7 +155,6 @@ export const syncMetaIntegration = action({
       scheduled += 1;
     }
 
-    console.log(`[syncMetaIntegration] Step 9: Sync complete - Pages: ${savedPages.length}, Forms: ${savedForms.length}, Leads scheduled: ${scheduled}`);
     return {
       pages: savedPages.length,
       forms: savedForms.length,
