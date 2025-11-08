@@ -1,12 +1,15 @@
 import { NextResponse, NextRequest } from "next/server";
-import { FetchMetaAccessToken } from "@/integration/meta";
+import { ConvertMetaCodeToAccessToken } from "@/integration/meta";
 import { cookies } from "next/headers";
 import { redis } from "@/lib/redis";
-import { ConvexHttpClient } from "convex/browser";
+import { fetchAction } from "convex/nextjs";
 import { api } from "@repo/backend/convex/_generated/api";
-import { env } from "@/lib/env";
+import { z } from "zod";
 
-const convex = new ConvexHttpClient(env.CONVEX_URL);
+const accessTokenSchema = z.object({
+  access_token: z.string(),
+  token_type: z.string(),
+});
 
 export async function GET(request: NextRequest) {
   console.log(
@@ -17,47 +20,39 @@ export async function GET(request: NextRequest) {
   const code = params.get("code");
 
   if (!state || !code) {
-    console.log("[API Meta Route] Error: Missing state or code");
     return NextResponse.json({ error: "State is required" }, { status: 400 });
   }
-
-  console.log("[API Meta Route] Step 2: Validating state from cookie");
   const cookieStore = await cookies();
-  const cookieState = cookieStore.get("meta:state");
+  const cookieState = cookieStore.get("meta_state");
 
   if (!cookieState || cookieState.value !== state) {
-    console.log("[API Meta Route] Error: Invalid cookie state");
     return NextResponse.json({ error: "Invalid state" }, { status: 400 });
   }
 
-  console.log("[API Meta Route] Step 3: Retrieving cached state from Redis");
-  const cachedState = await redis.get<{ userId: string; teamId: string }>(
-    state
-  );
+  const userState = await redis.get<{ userId: string; teamId: string }>(state);
 
-  if (!cachedState) {
-    console.log("[API Meta Route] Error: State not found in Redis");
+  if (!userState) {
     return NextResponse.json({ error: "Invalid state" }, { status: 400 });
   }
 
-  console.log("[API Meta Route] Step 4: Fetching Meta access token");
-  const accessTokenData = await FetchMetaAccessToken(code);
+  const accessTokenData = await ConvertMetaCodeToAccessToken(code);
 
-  console.log(
-    "[API Meta Route] Step 5: Calling Convex syncMetaIntegration action"
+  const TokenData = accessTokenSchema.parse(accessTokenData);
+
+  await fetchAction(
+    api.meta.action.handleMetaCallback,
+    {
+      teamId: userState.teamId,
+      accessToken: TokenData.access_token,
+      integratedByUserId: userState.userId,
+    },
+    {}
   );
-  await convex.action(api.meta.action.handleMetaCallback, {
-    teamId: cachedState.teamId,
-    userId: cachedState.userId,
-    accessToken: accessTokenData.access_token,
-  });
 
-  console.log("[API Meta Route] Step 6: Cleaning up Redis state");
   await redis.del(state);
+  cookieStore.delete("meta_state");
 
-  console.log("[API Meta Route] Step 7: Returning success response");
-  return NextResponse.json({
-    success: true,
-    data: accessTokenData,
-  });
+  return NextResponse.redirect(
+    new URL("/onboarding/meta?success=true", request.nextUrl.origin)
+  );
 }

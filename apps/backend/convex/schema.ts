@@ -4,6 +4,7 @@ import { v } from "convex/values";
 const schema = defineSchema({
   Integrations: defineTable({
     teamId: v.string(),
+    integratedByUserId: v.string(),
     integrationType: v.union(
       v.literal("meta"),
       v.literal("google"),
@@ -23,21 +24,19 @@ const schema = defineSchema({
 
   metaPages: defineTable({
     teamId: v.string(),
-    pageId: v.string(),
+    metaPageId: v.string(),
     pageName: v.string(),
     pageAccessToken: v.string(),
-    pageAccessTokenExpiresAt: v.number(),
     isWebhookSubscribed: v.optional(v.boolean()),
-
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("byTeamId", ["teamId"])
-    .index("byPageId", ["pageId"]),
+    .index("byTeamIdAndMetaPageId", ["teamId", "metaPageId"]),
 
   metaForms: defineTable({
     teamId: v.string(),
-    metaPageId: v.id("metaPages"),
+    metaPageId: v.string(),
     formId: v.string(),
     formName: v.string(),
     isPrimary: v.optional(v.boolean()),
@@ -46,9 +45,11 @@ const schema = defineSchema({
     updatedAt: v.number(),
   })
     .index("byTeamId", ["teamId"])
-    .index("byTeamIdAndIsPrimary", ["teamId", "isPrimary"])
-    .index("byMetaPageId", ["metaPageId"])
-    .index("byFormId", ["formId"]),
+    .index("byTeamIdAndMetaPageIdAndIsPrimary", [
+      "teamId",
+      "metaPageId",
+      "formId",
+    ]),
 
   metaWebhookEvents: defineTable({
     teamId: v.string(),

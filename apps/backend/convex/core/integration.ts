@@ -1,10 +1,11 @@
-import { mutation } from "../_generated/server";
+import { internalMutation, query } from "../_generated/server";
 import { v } from "convex/values";
 
-export const handleIntegration = mutation({
+export const saveIntegration = internalMutation({
   args: {
     teamId: v.string(),
     integrationType: v.union(v.literal("meta"), v.literal("google")),
+    integratedByUserId: v.string(),
     accessToken: v.string(),
     accessTokenExpiresAt: v.number(),
     refreshToken: v.optional(v.string()),
@@ -14,6 +15,7 @@ export const handleIntegration = mutation({
     const {
       teamId,
       integrationType,
+      integratedByUserId,
       accessToken,
       accessTokenExpiresAt,
       refreshToken,
@@ -32,6 +34,7 @@ export const handleIntegration = mutation({
         accessToken,
         accessTokenExpiresAt,
         refreshToken,
+        integratedByUserId,
         refreshTokenExpiresAt,
         isWebhookSubscribed: true,
         updatedAt: Date.now(),
@@ -40,6 +43,7 @@ export const handleIntegration = mutation({
       await ctx.db.insert("Integrations", {
         teamId,
         integrationType,
+        integratedByUserId,
         accessToken,
         accessTokenExpiresAt,
         isWebhookSubscribed: true,

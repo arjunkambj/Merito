@@ -39,11 +39,15 @@ export default function Navbar() {
             </Link>
           ))}
         </nav>
-
-        <Button color="primary" as={Link} href="/sign-in">
-          Get Started
-          <Icon icon="lucide:arrow-right" className="h-4 w-4" />
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button color="primary" as={Link} href="/onboarding/meta">
+            Onboard
+          </Button>
+          <Button color="primary" as={Link} href="/sign-in">
+            Get Started
+            <Icon icon="lucide:arrow-right" className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </header>
   );
