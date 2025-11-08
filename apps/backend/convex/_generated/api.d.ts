@@ -9,7 +9,14 @@
  */
 
 import type * as core_integration from "../core/integration.js";
+import type * as http from "../http.js";
 import type * as meta_action from "../meta/action.js";
+import type * as meta_index from "../meta/index.js";
+import type * as meta_leads from "../meta/leads.js";
+import type * as meta_mutation from "../meta/mutation.js";
+import type * as meta_query from "../meta/query.js";
+import type * as meta_utils from "../meta/utils.js";
+import type * as meta_webhook from "../meta/webhook.js";
 
 import type {
   ApiFromModules,
@@ -27,7 +34,14 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   "core/integration": typeof core_integration;
+  http: typeof http;
   "meta/action": typeof meta_action;
+  "meta/index": typeof meta_index;
+  "meta/leads": typeof meta_leads;
+  "meta/mutation": typeof meta_mutation;
+  "meta/query": typeof meta_query;
+  "meta/utils": typeof meta_utils;
+  "meta/webhook": typeof meta_webhook;
 }>;
 declare const fullApiWithMounts: typeof fullApi;
 
@@ -40,4 +54,92 @@ export declare const internal: FilterApi<
   FunctionReference<any, "internal">
 >;
 
-export declare const components: {};
+export declare const components: {
+  metaWorkpool: {
+    lib: {
+      cancel: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          id: string;
+          logLevel: "DEBUG" | "TRACE" | "INFO" | "REPORT" | "WARN" | "ERROR";
+        },
+        any
+      >;
+      cancelAll: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          before?: number;
+          limit?: number;
+          logLevel: "DEBUG" | "TRACE" | "INFO" | "REPORT" | "WARN" | "ERROR";
+        },
+        any
+      >;
+      enqueue: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          config: {
+            logLevel: "DEBUG" | "TRACE" | "INFO" | "REPORT" | "WARN" | "ERROR";
+            maxParallelism: number;
+          };
+          fnArgs: any;
+          fnHandle: string;
+          fnName: string;
+          fnType: "action" | "mutation" | "query";
+          onComplete?: { context?: any; fnHandle: string };
+          retryBehavior?: {
+            base: number;
+            initialBackoffMs: number;
+            maxAttempts: number;
+          };
+          runAt: number;
+        },
+        string
+      >;
+      enqueueBatch: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          config: {
+            logLevel: "DEBUG" | "TRACE" | "INFO" | "REPORT" | "WARN" | "ERROR";
+            maxParallelism: number;
+          };
+          items: Array<{
+            fnArgs: any;
+            fnHandle: string;
+            fnName: string;
+            fnType: "action" | "mutation" | "query";
+            onComplete?: { context?: any; fnHandle: string };
+            retryBehavior?: {
+              base: number;
+              initialBackoffMs: number;
+              maxAttempts: number;
+            };
+            runAt: number;
+          }>;
+        },
+        Array<string>
+      >;
+      status: FunctionReference<
+        "query",
+        "internal",
+        { id: string },
+        | { previousAttempts: number; state: "pending" }
+        | { previousAttempts: number; state: "running" }
+        | { state: "finished" }
+      >;
+      statusBatch: FunctionReference<
+        "query",
+        "internal",
+        { ids: Array<string> },
+        Array<
+          | { previousAttempts: number; state: "pending" }
+          | { previousAttempts: number; state: "running" }
+          | { state: "finished" }
+        >
+      >;
+    };
+  };
+};

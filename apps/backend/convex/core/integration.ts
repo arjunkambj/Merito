@@ -33,6 +33,7 @@ export const handleIntegration = mutation({
         accessTokenExpiresAt,
         refreshToken,
         refreshTokenExpiresAt,
+        isWebhookSubscribed: true,
         updatedAt: Date.now(),
       });
     } else {
