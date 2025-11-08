@@ -1,4 +1,4 @@
-# Repository Guidelines
+# Repository Guidelines for Merito
 
 ## Project Structure & Module Organization
 This Turborepo keeps workspaces focused: the Next.js 16 frontend lives in `apps/web` with the App Router under `src/app` and supporting modules in `src/components`, `src/hooks`, and `src/store`. Convex functions are grouped in `apps/backend/convex`, and Bun powers their local runner. Reusable React primitives ship from `packages/ui/src` through the `@repo/ui` export. Shared lint and TypeScript baselines remain in `packages/eslint-config` and `packages/typescript-config`; adjust rules in those sources so every workspace inherits the change.

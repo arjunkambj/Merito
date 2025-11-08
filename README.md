@@ -1,8 +1,8 @@
-# OKTOO Lead Management CRM
+# Merito Lead Management CRM
 
-OKTOO centralizes the leads generated from Meta (Facebook & Instagram) and Google Ads into a single, collaborative workspace. The project focuses on automating lead ingestion, enrichment, routing, and follow-up so sales teams can react in real time instead of stitching together multiple dashboards.
+Merito centralizes the leads generated from Meta (Facebook & Instagram) and Google Ads into a single, collaborative workspace. The project focuses on automating lead ingestion, enrichment, routing, and follow-up so sales teams can react in real time instead of stitching together multiple dashboards.
 
-OKTOO lives in a Turborepo monorepo and is split between a Next.js front end, a Convex backend, and a shared design system. This repository provides the foundation for the integrations, data models, and UI flows that power the CRM.
+Merito lives in a Turborepo monorepo and is split between a Next.js front end, a Convex backend, and a shared design system. This repository provides the foundation for the integrations, data models, and UI flows that power the CRM.
 
 ## Highlights
 
@@ -84,7 +84,7 @@ The command above installs dependencies for every workspace (web, backend, and s
   bun run dev
   ```
 
-Visit `http://localhost:3000` to access the OKTOO dashboard shell.
+Visit `http://localhost:3000` to access the Merito dashboard shell.
 
 ### Quality Checks
 
