@@ -2,6 +2,18 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 const schema = defineSchema({
+  onboarding: defineTable({
+    teamId: v.string(),
+    isMetaIntegrated: v.boolean(),
+    isFormselected: v.boolean(),
+    isTeamInvited: v.boolean(),
+    isCompleted: v.boolean(),
+    hasSyncedLeads: v.boolean(),
+    step2CompletedAt: v.optional(v.number()),
+    step3CompletedAt: v.optional(v.number()),
+    createdAt: v.number(),
+  }).index("byTeamId", ["teamId"]),
+
   Integrations: defineTable({
     teamId: v.string(),
     integratedByUserId: v.string(),
@@ -45,7 +57,7 @@ const schema = defineSchema({
     updatedAt: v.number(),
   })
     .index("byTeamId", ["teamId"])
-    .index("byTeamIdAndMetaPageIdAndIsPrimary", [
+    .index("byTeamIdAndMetaPageIdAndFormId", [
       "teamId",
       "metaPageId",
       "formId",

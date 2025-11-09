@@ -58,7 +58,7 @@ export const saveMetaForm = internalMutation({
 
     const metaForm = await ctx.db
       .query("metaForms")
-      .withIndex("byTeamIdAndMetaPageIdAndIsPrimary", (q) =>
+      .withIndex("byTeamIdAndMetaPageIdAndFormId", (q) =>
         q
           .eq("teamId", teamId)
           .eq("metaPageId", metaPageId)

@@ -8,7 +8,7 @@
  * @module
  */
 
-import type * as core_integration from "../core/integration.js";
+import type * as core_onboarding from "../core/onboarding.js";
 import type * as http from "../http.js";
 import type * as meta_action from "../meta/action.js";
 import type * as meta_internal from "../meta/internal.js";
@@ -29,7 +29,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "core/integration": typeof core_integration;
+  "core/onboarding": typeof core_onboarding;
   http: typeof http;
   "meta/action": typeof meta_action;
   "meta/internal": typeof meta_internal;

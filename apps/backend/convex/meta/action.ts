@@ -38,7 +38,7 @@ export const handleMetaCallback = action({
 
   handler: async (ctx, args) => {
     const { teamId, accessToken, integratedByUserId } = args;
-    await ctx.runMutation(internal.core.integration.saveIntegration, {
+    await ctx.runMutation(internal.core.onboarding.saveIntegration, {
       teamId,
       accessToken,
       integratedByUserId,
@@ -49,6 +49,7 @@ export const handleMetaCallback = action({
     const PagesResponse = await fetchMetaPages(accessToken);
     const metaPages = z.array(MetaPageSchema).parse(PagesResponse.data);
 
+    // save all pages in parallel
     await Promise.all(
       metaPages.map((metaPage) =>
         metaWorkpool.enqueueMutation(ctx, internal.meta.internal.saveMetaPage, {
@@ -58,6 +59,7 @@ export const handleMetaCallback = action({
       )
     );
 
+    // fetching form of all page and saving in parallel
     await Promise.all(
       metaPages.map((metaPage) =>
         metaWorkpool.enqueueAction(
@@ -75,7 +77,7 @@ export const handleMetaCallback = action({
     );
 
     await ctx.runMutation(
-      internal.core.integration.updatesecuessfullyIntegrated,
+      internal.core.onboarding.updateSuccessfullyIntegrated,
       {
         teamId,
         integrationType: "meta",

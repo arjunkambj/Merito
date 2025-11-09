@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { ConvertMetaCodeToAccessToken } from "@/integration/meta";
 import { cookies } from "next/headers";
 import { redis } from "@/lib/redis";
-import { fetchAction } from "convex/nextjs";
+import { fetchAction, fetchMutation } from "convex/nextjs";
 import { api } from "@repo/backend/convex/_generated/api";
 import { z } from "zod";
 
@@ -45,6 +45,14 @@ export async function GET(request: NextRequest) {
       teamId: userState.teamId,
       accessToken: TokenData.access_token,
       integratedByUserId: userState.userId,
+    },
+    {}
+  );
+
+  await fetchMutation(
+    api.core.onboarding.createonboarding,
+    {
+      teamId: userState.teamId,
     },
     {}
   );
