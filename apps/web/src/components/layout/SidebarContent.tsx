@@ -25,7 +25,7 @@ const SidebarContent = React.memo(({ onClose }: SidebarContentProps) => {
     () =>
       `relative flex h-full flex-1 flex-col transition-all duration-300 ease-in-out ${
         isOpen
-          ? "w-full max-w-full opacity-100 sm:max-w-66 sm:w-66"
+          ? "w-full max-w-full opacity-100 sm:max-w-65 sm:w-65"
           : "w-0 p-0 opacity-0 overflow-hidden"
       }`,
     [isOpen]
@@ -67,10 +67,10 @@ const SidebarContent = React.memo(({ onClose }: SidebarContentProps) => {
       <Link
         aria-current={pathname === "/overview" ? "page" : undefined}
         className={cn(
-          "flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200",
+          "flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200",
           "no-underline w-full group",
           pathname === "/overview"
-            ? "bg-primary/20 text-primary-600 font-semibold"
+            ? "bg-default-200/95 text-default-900 font-semibold"
             : "text-default-700 hover:text-foreground hover:bg-default-200/70"
         )}
         href="/overview"
@@ -79,12 +79,13 @@ const SidebarContent = React.memo(({ onClose }: SidebarContentProps) => {
         <Icon
           aria-hidden
           className={cn(
-            "shrink-0 transition-all w-5 h-5",
+            "shrink-0 transition-all",
             pathname === "/overview"
-              ? "text-primary-600"
+              ? "text-default-900"
               : "text-default-700 group-hover:text-foreground"
           )}
           icon="solar:home-2-bold-duotone"
+          width={20}
         />
         <span className="text-sm font-medium truncate">Overview</span>
       </Link>
@@ -118,17 +119,17 @@ const SidebarContent = React.memo(({ onClose }: SidebarContentProps) => {
       <div className="mb-4">{logoSection}</div>
 
       {/* Overview Item */}
-      <div className="mb-3 px-6">{overviewItem}</div>
+      <div className="mb-3 px-4">{overviewItem}</div>
 
       {/* Main Navigation */}
-      <div className="flex-1 min-h-0 px-6">
+      <div className="flex-1 min-h-0 px-4">
         <ScrollShadow className={scrollShadowClasses}>
           {sidebarMenuContent}
         </ScrollShadow>
       </div>
 
       {/* Footer Items */}
-      <div className="mt-auto pt-3 border-t border-default-200 px-6 pb-6">
+      <div className="mt-auto pt-3 border-t border-default-200 px-4 pb-6">
         {footerItemsContent}
       </div>
     </div>

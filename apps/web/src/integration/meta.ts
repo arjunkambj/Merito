@@ -31,6 +31,6 @@ export const ConvertMetaCodeToAccessToken = async (code: string) => {
   return data;
 };
 
-export const SubscribeToMetaLeadChangeWebhook = async (accessToken: string) => {
+export const SubscribeToMetaLeadChangeWebhook = async () => {
   return true;
 };

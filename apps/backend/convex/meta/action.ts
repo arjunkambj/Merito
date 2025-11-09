@@ -49,16 +49,6 @@ export const handleMetaCallback = action({
     const PagesResponse = await fetchMetaPages(accessToken);
     const metaPages = z.array(MetaPageSchema).parse(PagesResponse.data);
 
-    // save all pages in parallel
-    await Promise.all(
-      metaPages.map((metaPage) =>
-        metaWorkpool.enqueueMutation(ctx, internal.meta.internal.saveMetaPage, {
-          teamId,
-          page: metaPage,
-        })
-      )
-    );
-
     // fetching form of all page and saving in parallel
     await Promise.all(
       metaPages.map((metaPage) =>
@@ -115,6 +105,8 @@ export const processPageForms = internalAction({
             {
               teamId,
               metaPageId: metaPage.id,
+              pageName: metaPage.name,
+              pageAccessToken: metaPage.access_token,
               form: {
                 id: metaForm.id,
                 name: metaForm.name,

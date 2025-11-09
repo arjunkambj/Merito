@@ -42,15 +42,16 @@ const SidebarMenu = ({ items, className }: SidebarMenuProps) => {
       <Link
         key={item.key}
         aria-current={isActive(item.href || "") ? "page" : undefined}
-        className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 no-underline group ${isActive(item.href || "") ? "bg-primary/20 text-primary-600 font-semibold" : "text-default-700 hover:text-foreground hover:bg-default-200/70"}`}
+        className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200 no-underline group ${isActive(item.href || "") ? "bg-default-200/95 text-default-900 font-semibold" : "text-default-700 hover:text-foreground hover:bg-default-200/70"}`}
         href={item.href || "#"}
         prefetch={true}
       >
         {item.icon && (
           <Icon
             aria-hidden
-            className={`shrink-0 transition-all w-5 h-5 ${isActive(item.href || "") ? "text-primary-600" : "text-default-700 group-hover:text-foreground"}`}
+            className={`shrink-0 transition-all ${isActive(item.href || "") ? "text-default-900" : "text-default-700 group-hover:text-foreground"}`}
             icon={item.icon}
+            width={18}
           />
         )}
         <span className="text-sm font-medium truncate">{item.title}</span>

@@ -34,34 +34,24 @@ const schema = defineSchema({
     .index("byTeamId", ["teamId"])
     .index("byIntegrationTypeAndTeamId", ["integrationType", "teamId"]),
 
-  metaPages: defineTable({
+  metaForms: defineTable({
     teamId: v.string(),
     metaPageId: v.string(),
     pageName: v.string(),
     pageAccessToken: v.string(),
     isWebhookSubscribed: v.optional(v.boolean()),
-    createdAt: v.number(),
-    updatedAt: v.number(),
-  })
-    .index("byTeamId", ["teamId"])
-    .index("byTeamIdAndMetaPageId", ["teamId", "metaPageId"]),
-
-  metaForms: defineTable({
-    teamId: v.string(),
-    metaPageId: v.string(),
     formId: v.string(),
     formName: v.string(),
     isPrimary: v.boolean(),
-
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("byTeamId", ["teamId"])
-    .index("byTeamIdAndMetaPageIdAndFormId", [
-      "teamId",
-      "metaPageId",
-      "formId",
-    ]),
+    .index("byTeamIdAndMetaPageId", ["teamId", "metaPageId"])
+    .index(
+      "byTeamIdAndMetaPageIdAndFormId",
+      ["teamId", "metaPageId", "formId"]
+    ),
 
   metaWebhookEvents: defineTable({
     teamId: v.string(),

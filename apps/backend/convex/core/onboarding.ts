@@ -112,10 +112,12 @@ export const createOnboarding = mutation({
   },
   handler: async (ctx, args) => {
     const { teamId } = args;
+
     const existingOnboarding = await ctx.db
       .query("onboarding")
       .withIndex("byTeamId", (q) => q.eq("teamId", teamId))
       .first();
+
     if (existingOnboarding) {
       await ctx.db.patch(existingOnboarding._id, {
         isMetaIntegrated: true,
@@ -125,16 +127,18 @@ export const createOnboarding = mutation({
         isCompleted: false,
         createdAt: Date.now(),
       });
+    } else {
+      await ctx.db.insert("onboarding", {
+        teamId,
+        isMetaIntegrated: true,
+        isFormselected: false,
+        isTeamInvited: false,
+        hasSyncedLeads: false,
+        isCompleted: false,
+        createdAt: Date.now(),
+      });
     }
-    await ctx.db.insert("onboarding", {
-      teamId,
-      isMetaIntegrated: true,
-      isFormselected: false,
-      isTeamInvited: false,
-      hasSyncedLeads: false,
-      isCompleted: false,
-      createdAt: Date.now(),
-    });
+    return true;
   },
 });
 

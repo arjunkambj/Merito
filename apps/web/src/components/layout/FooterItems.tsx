@@ -16,17 +16,17 @@ export const FooterItems = () => {
   const footerItemsContent = useMemo(() => {
     return DASHBOARD_FOOTER_ITEMS.map((item) => {
       const active = isActive(item.href || "");
-      const iconName = active && item.activeIcon ? item.activeIcon : item.icon;
+      const iconName = item.icon;
 
       return (
         <Link
           key={item.key}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200",
+            "flex items-center gap-3 px-4 py-2 rounded-lg transition-all duration-200",
             "no-underline w-full group",
             active
-              ? "bg-primary/20 text-primary-600 font-semibold"
+              ? "bg-default-200/95 text-default-900 font-semibold"
               : "text-default-700 hover:text-foreground hover:bg-default-200/70"
           )}
           href={item.href || "#"}
@@ -36,12 +36,13 @@ export const FooterItems = () => {
             <Icon
               aria-hidden
               className={cn(
-                "shrink-0 transition-all w-5 h-5",
+                "shrink-0 transition-all",
                 active
-                  ? "text-primary-600"
+                  ? "text-default-900"
                   : "text-default-700 group-hover:text-foreground"
               )}
               icon={iconName}
+              width={20}
             />
           )}
           <span className="text-sm font-medium">{item.label}</span>

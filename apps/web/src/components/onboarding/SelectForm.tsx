@@ -116,12 +116,19 @@ export default function SelectForm({ teamId }: { teamId: string }) {
   );
 }
 
+type MetaFormType = {
+  id: string;
+  name: string;
+  pageId: string;
+  isPrimary: boolean;
+};
+
 const FormCard = ({
   metaForm,
   isSelected,
   handleFormToggle,
 }: {
-  metaForm: any;
+  metaForm: MetaFormType;
   isSelected: boolean;
   handleFormToggle: (formId: string) => void;
 }) => {

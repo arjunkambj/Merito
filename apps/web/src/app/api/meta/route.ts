@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
   );
 
   await fetchMutation(
-    api.core.onboarding.createonboarding,
+    api.core.onboarding.createOnboarding,
     {
       teamId: userState.teamId,
     },
