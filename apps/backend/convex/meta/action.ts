@@ -10,7 +10,7 @@ import {
 import { internal } from "../_generated/api";
 import { z } from "zod";
 
-const FETCH_COUNT = 5;
+const FETCH_COUNT = 3;
 
 const MetaPageSchema = z.object({
   id: z.string(),
@@ -166,7 +166,7 @@ export const processFormLeads = internalAction({
 
     let totalLeads = 0;
     let fetchCount = 0;
-    const leadsResponse = await fetchMetaLeads(formId, pageAccessToken);
+    let leadsResponse = await fetchMetaLeads(formId, pageAccessToken);
 
     if (leadsResponse.data && leadsResponse.data.length > 0) {
       const parsedLeads = z.array(MetaLeadSchema).parse(leadsResponse.data);
@@ -187,11 +187,9 @@ export const processFormLeads = internalAction({
 
     // Fetch and save paginated leads up to FETCH_COUNT times
     while (leadsResponse.paging?.next && fetchCount < FETCH_COUNT) {
-      const nextLeadsResponse = await fetchFromUrl(leadsResponse.paging.next);
-      if (nextLeadsResponse.data && nextLeadsResponse.data.length > 0) {
-        const parsedLeads = z
-          .array(MetaLeadSchema)
-          .parse(nextLeadsResponse.data);
+      leadsResponse = await fetchFromUrl(leadsResponse.paging.next);
+      if (leadsResponse.data && leadsResponse.data.length > 0) {
+        const parsedLeads = z.array(MetaLeadSchema).parse(leadsResponse.data);
 
         await Promise.all(
           parsedLeads.map((lead) =>
