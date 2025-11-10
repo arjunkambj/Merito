@@ -119,28 +119,6 @@ export const processPageForms = internalAction({
   },
 });
 
-const MetaLeadSchema = z.object({
-  id: z.string(),
-  created_time: z.string(),
-  field_data: z.array(
-    z.object({
-      name: z.string(),
-      values: z.array(z.string()),
-    })
-  ),
-  form_id: z.string().optional(),
-  page_id: z.string().optional(),
-  is_organic: z.boolean().optional(),
-  ad_id: z.string().optional(),
-  ad_name: z.string().optional(),
-  adset_id: z.string().optional(),
-  adset_name: z.string().optional(),
-  adgroup_id: z.string().optional(),
-  adgroup_name: z.string().optional(),
-  campaign_id: z.string().optional(),
-  campaign_name: z.string().optional(),
-});
-
 export const fetchInitialLeads = action({
   args: {
     teamId: v.string(),
@@ -185,13 +163,11 @@ export const processFormLeads = internalAction({
     metaFormId: v.id("metaForms"),
     formId: v.string(),
     pageAccessToken: v.string(),
-    since: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const { teamId, metaFormId, formId, pageAccessToken, since } = args;
+    const { teamId, metaFormId, formId, pageAccessToken } = args;
 
-    const leadsResponse = await fetchMetaLeads(formId, pageAccessToken, since);
-
+    const leadsResponse = await fetchMetaLeads(formId, pageAccessToken);
     console.log(leadsResponse);
   },
 });

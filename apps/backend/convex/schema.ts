@@ -67,18 +67,16 @@ const schema = defineSchema({
   leads: defineTable({
     teamId: v.string(),
     metaFormId: v.id("metaForms"),
+
     metaLeadId: v.string(),
-    fullName: v.optional(v.string()),
-    email: v.optional(v.string()),
-    phone: v.optional(v.string()),
-    country: v.optional(v.string()),
-    state: v.optional(v.string()),
-    city: v.optional(v.string()),
-    postalCode: v.optional(v.string()),
-    customFields: v.optional(v.any()),
+    adid: v.string(),
+    adName: v.string(),
+    adSetId: v.string(),
+    adSetName: v.string(),
+    campaignId: v.string(),
+    campaignName: v.string(),
 
     capturedAt: v.number(),
-    createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("byTeamId", ["teamId"])
