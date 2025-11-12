@@ -16,7 +16,7 @@ export default function DashBoardHeader({ className }: { className?: string }) {
 
   return (
     <header
-      className={`flex px-12 py-2 justify-end items-center w-full border-b border-default-200 ${className || ""}`}
+      className={`flex px-6 py-4 justify-end items-center w-full border-b border-default-200 ${className || ""}`}
     >
       <div aria-hidden className="h-6 mx-2 w-px bg-default-200" />
     </header>

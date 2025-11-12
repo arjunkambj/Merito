@@ -69,7 +69,7 @@ const SidebarMenu = ({ items, className }: SidebarMenuProps) => {
           base: "bg-transparent shadow-none border-none px-0 focus-visible:ring-0 focus:ring-0 ring-0 focus:outline-none",
           heading: "pr-0 focus-visible:ring-0 focus:ring-0 ring-0",
           trigger:
-            "px-3.5 py-0 min-h-10 h-10 rounded-lg hover:bg-default-100 data-[hover=true]:bg-default-100 focus-visible:ring-0 focus:ring-0 ring-0 transition-colors",
+            "px-4 py-2 min-h-10 h-10 rounded-lg hover:bg-default-100 data-[hover=true]:bg-default-100 focus-visible:ring-0 focus:ring-0 ring-0 transition-colors",
           content: "py-0 pl-0",
           indicator: "text-default-600 data-[open=true]:rotate-90",
         }}
@@ -97,7 +97,7 @@ const SidebarMenu = ({ items, className }: SidebarMenuProps) => {
           </div>
         }
       >
-        <div className="flex flex-col gap-1 overflow-hidden mt-1">
+        <div className="flex flex-col gap-1.5 overflow-hidden mt-1.5">
           {category.items?.map(renderMenuItem)}
         </div>
       </AccordionItem>
@@ -108,7 +108,7 @@ const SidebarMenu = ({ items, className }: SidebarMenuProps) => {
   const accordionContent = useMemo(
     () => (
       <Accordion
-        className="px-0 gap-2"
+        className="px-0 gap-3"
         defaultExpandedKeys={defaultExpandedKeys}
         selectionMode="multiple"
         variant="splitted"

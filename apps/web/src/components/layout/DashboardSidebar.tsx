@@ -55,12 +55,14 @@ const Sidebar = React.memo(({ className }: { className?: string }) => {
 
   const drawerClasses = useMemo(
     () =>
-      isMobile
-        ? "w-screen max-w-full h-dvh bg-content1 border-r border-default-100 shadow-none p-0"
-        : "max-w-66 w-66 bg-content1 border-r border-default-100 shadow-none p-0",
-    [isMobile]
+      "w-screen max-w-full h-dvh bg-content1 border-r border-default-100 shadow-none p-0",
+    []
   );
-  const sectionClasses = useMemo(() => `${className}`, [className]);
+  
+  const sectionClasses = useMemo(
+    () => `${className} ${!isMobile ? "w-64 flex-shrink-0" : ""}`,
+    [className, isMobile]
+  );
 
   const drawerContent = useMemo(
     () => (

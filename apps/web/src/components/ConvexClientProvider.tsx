@@ -4,6 +4,7 @@ import type React from "react";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { ConvexQueryCacheProvider } from "convex-helpers/react/cache/provider";
 import { env } from "@/lib/env";
+import { stackClientApp } from "@/stack/client";
 
 const convex = new ConvexReactClient(env.NEXT_PUBLIC_CONVEX_URL);
 

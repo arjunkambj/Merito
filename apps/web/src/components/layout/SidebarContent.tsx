@@ -23,10 +23,8 @@ const SidebarContent = React.memo(({ onClose }: SidebarContentProps) => {
 
   const containerClasses = useMemo(
     () =>
-      `relative flex h-full flex-1 flex-col transition-all duration-300 ease-in-out ${
-        isOpen
-          ? "w-full max-w-full opacity-100 sm:max-w-65 sm:w-65"
-          : "w-0 p-0 opacity-0 overflow-hidden"
+      `relative flex h-full w-full flex-col transition-all duration-300 ease-in-out ${
+        isOpen ? "opacity-100" : "w-0 p-0 opacity-0 overflow-hidden"
       }`,
     [isOpen]
   );
@@ -45,7 +43,7 @@ const SidebarContent = React.memo(({ onClose }: SidebarContentProps) => {
 
   const logoSection = useMemo(
     () => (
-      <div className="flex items-center  justify-between px-8 py-2">
+      <div className="flex items-center justify-between px-4 pt-4 pb-2">
         <Button
           isIconOnly
           aria-label="Close sidebar"
@@ -116,10 +114,10 @@ const SidebarContent = React.memo(({ onClose }: SidebarContentProps) => {
   return (
     <div className={containerClasses}>
       {/* Logo and Close Button */}
-      <div className="mb-4">{logoSection}</div>
+      {logoSection}
 
       {/* Overview Item */}
-      <div className="mb-3 px-4">{overviewItem}</div>
+      <div className="px-4 mb-4">{overviewItem}</div>
 
       {/* Main Navigation */}
       <div className="flex-1 min-h-0 px-4">
@@ -129,7 +127,7 @@ const SidebarContent = React.memo(({ onClose }: SidebarContentProps) => {
       </div>
 
       {/* Footer Items */}
-      <div className="mt-auto pt-3 border-t border-default-200 px-4 pb-6">
+      <div className="mt-auto pt-5 border-t border-default-200 px-4 pb-5">
         {footerItemsContent}
       </div>
     </div>

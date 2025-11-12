@@ -12,9 +12,7 @@ export default async function DappLayout({ children }: DappLayoutProps) {
       <DashBoardHeader />
       <div className="flex flex-1 flex ">
         <DashboardSidebar className=" border-r border-default-200 h-full" />
-        <main className="flex flex-1 flex-col gap-6 px-2  overflow-auto">
-          {children}
-        </main>
+        <main className="flex flex-1 flex-col overflow-auto">{children}</main>
       </div>
     </div>
   );

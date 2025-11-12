@@ -51,5 +51,5 @@ export const FooterItems = () => {
     });
   }, [isActive]);
 
-  return <div className="flex gap-1 flex-col">{footerItemsContent}</div>;
+  return <div className="flex gap-1.5 flex-col">{footerItemsContent}</div>;
 };
